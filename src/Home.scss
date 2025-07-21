@@ -1,0 +1,14 @@
+.home {
+  display: flex;
+  flex-direction: column;
+  &-header {
+    display: flex;
+    justify-content: center;
+    border-bottom: 2px solid #cbcbcb11;
+    padding: 10px;
+    &-title{
+      color: white;
+      font-size: 25px;
+    }
+  }
+}
