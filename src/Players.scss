@@ -1,0 +1,82 @@
+.players-page {
+  max-width: 800px;
+  margin: 2rem auto;
+  
+  &__title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    text-align: center;
+    color: white;
+  }
+
+  &__toggle-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 1rem;
+
+    &:hover {
+      background-color: #0056b3;
+    }
+  }
+}
+
+.players-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+
+  th, td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+  }
+
+  td {
+    color: white;
+  }
+
+  th {
+    background-color: #f0f0f0;
+  }
+
+  &__empty {
+    text-align: center;
+    font-style: italic;
+    color: #777;
+  }
+}
+
+.players-form {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+
+  &__input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    min-width: 150px;
+  }
+
+  &__submit {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+
+    &:hover {
+      background-color: #218838;
+    }
+  }
+}

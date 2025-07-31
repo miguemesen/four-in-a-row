@@ -4,8 +4,7 @@ import { FaGamepad } from "react-icons/fa";
 import { FaHome } from "react-icons/fa";
 import { FaUser } from "react-icons/fa";
 import { RiLogoutBoxRLine } from "react-icons/ri";
-import { FaSearch } from "react-icons/fa";
-import { FaMessage } from "react-icons/fa6";
+import { MdLeaderboard } from "react-icons/md";
 import { getUserInformation } from "./utils";
 import { useNavigate } from "react-router-dom";
 
@@ -32,19 +31,11 @@ const Sidebar = () => {
           </a>
         </li>
         <li className="nav-item">
-          <a onClick={() => navigate(`/profile/${user_id}`)} className="nav-link">
+          <a onClick={() => navigate(`/players`)} className="nav-link">
             <div>
               <FaUser className="icon"/>
             </div>
-            <span className="link-text">Profile</span>
-          </a>
-        </li>
-        <li className="nav-item" onClick={() => localStorage.clear()}>
-          <a href="/login" className="nav-link" >
-            <div>
-              <RiLogoutBoxRLine className="icon" />
-            </div>
-            <span className="link-text">Logout</span>
+            <span className="link-text">Players</span>
           </a>
         </li>
       </ul>

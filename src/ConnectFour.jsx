@@ -6,7 +6,7 @@ const COLUMNS = 7;
 const createBoard = () =>
   Array.from({ length: ROWS }, () => Array(COLUMNS).fill(null));
 
-export default function ConnectFour() {
+export default function ConnectFour({playerOne, playerTwo}) {
   const [board, setBoard] = useState(createBoard);
   const [player, setPlayer] = useState("🔴");
   const [winner, setWinner] = useState(null);
