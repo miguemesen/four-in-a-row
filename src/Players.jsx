@@ -1,28 +1,51 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Players.scss';
+import { getAllPlayers, postPlayer } from './api';
+
 
 const Players = () => {
   const [players, setPlayers] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [newPlayer, setNewPlayer] = useState({ id: '', name: '' });
 
+  const fetchPlayers = async () => {
+    try {
+      const data = await getAllPlayers();
+      setPlayers(data);
+    } catch (error) {
+      console.error("Error fetching players:", error);
+    }
+  };
+
+  const createPlayer = async (player) => {
+    try {
+      await postPlayer(player);
+      fetchPlayers();
+    } catch (error) {
+      console.error("Error creating player:", error);
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewPlayer((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleCreatePlayer = () => {
+  const handleCreatePlayer = async () => {
     const { id, name } = newPlayer;
     if (!id || !name) return alert('Both ID and Name are required.');
     if (players.some((p) => p.id === id)) return alert('ID already exists.');
+    if (players.some((p) => p.nombre === name)) return alert('Name already exists.');
 
-    setPlayers((prev) => [
-      ...prev,
-      { id, name, wins: 0, losses: 0, draws: 0 }
-    ]);
+    await createPlayer({id, nombre:name})
+
     setNewPlayer({ id: '', name: '' });
     setShowForm(false);
-  };
+  };  
+
+  useEffect(() => {
+    fetchPlayers();
+  }, []);
 
   return (
     <div className="players-page">
@@ -48,11 +71,11 @@ const Players = () => {
             players.map((player) => (
               <tr key={player.id}>
                 <td>{player.id}</td>
-                <td>{player.name}</td>
-                <td>{player.wins + player.losses}</td>
-                <td>{player.wins}</td>
-                <td>{player.losses}</td>
-                <td>{player.draws}</td>
+                <td>{player.nombre}</td>
+                <td>{player.ganadas + player.perdidas}</td>
+                <td>{player.ganadas}</td>
+                <td>{player.perdidas}</td>
+                <td>{player.empates}</td>
               </tr>
             ))
           )}

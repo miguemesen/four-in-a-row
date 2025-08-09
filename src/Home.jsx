@@ -6,10 +6,13 @@ import { getUserInformation } from './utils';
 import ConnectFour from './ConnectFour';
 import Dropdown from './components/Dropdown';
 import Menu from './Menu';
+import { getAllPlayers } from './api';
 
 const Home = () => {
 
+  const [players, setPlayers] = useState([]);
   const [isGameStarted, setIsGameStarted] = useState(false)
+  const [isGameFinished, setIsGameFinished] = useState(true)
   const [isDropdownDisabled, setIsDropdownDisabled] = useState(false);
   const [isGameReady, setIsGameReady] = useState(false)
   const [mode, setMode] = useState(null);
@@ -18,18 +21,23 @@ const Home = () => {
     dropdown2: '',
   });
 
+console.log('print: isDropdownDisabled: ', isDropdownDisabled)
+
+  const fetchPlayers = async () => {
+    try {
+      const data = await getAllPlayers();
+      setPlayers(data);
+    } catch (error) {
+      console.error("Error fetching players:", error);
+    }
+  };
+
   const handleChange = (id, value) => {
     setSelected((prev) => ({
       ...prev,
       [id]: value,
     }));
   };
-
-  const handleDisabledDropdown = () => {
-    if (isGameStarted) {
-      setIsDropdownDisabled(true)
-    }
-  }
 
   const userInformation = getUserInformation();
 
@@ -47,6 +55,19 @@ const Home = () => {
     }
   },[mode, selected])
 
+  useEffect(() => {
+    fetchPlayers()
+  }, [])
+
+  useEffect(() => {
+    if(isGameStarted) {
+      setIsDropdownDisabled(true)
+    }
+    if(!isGameStarted && isGameFinished) {
+      setIsDropdownDisabled(false)
+    }
+  }, [isGameStarted, isGameFinished])
+
   const options = [
     { label: 'Apple', value: 'apple' },
     { label: 'Banana', value: 'banana' },
@@ -62,11 +83,10 @@ const Home = () => {
       <div className='initial-menu'>
         <Menu mode={mode} setMode={setMode}/>
       </div>
-      
       {(mode === 'new' || isGameReady) && (<div className='select-players'>
         <Dropdown
           id="dropdown1"
-          options={options}
+          options={players}
           selectedValue={selected.dropdown1}
           onChange={handleChange}
           disabledValues={[selected.dropdown2]}
@@ -74,14 +94,14 @@ const Home = () => {
         />
         <Dropdown
           id="dropdown2"
-          options={options}
+          options={players}
           selectedValue={selected.dropdown2}
           onChange={handleChange}
           disabledValues={[selected.dropdown1]}
           disabledDropdown={isDropdownDisabled}
         />
       </div>)}
-      {isGameReady && (<ConnectFour playerOne={selected.dropdown1} playerTwo={selected.dropdown2}/>)}
+      {isGameReady && (<ConnectFour playerOne={selected.dropdown1} playerTwo={selected.dropdown2} players={players} isGameStarted={isGameStarted} setIsGameStarted={setIsGameStarted} setIsGameFinished={setIsGameFinished} setIsDropdownDisabled={setIsDropdownDisabled}/>)}
     </div>
   )
 }

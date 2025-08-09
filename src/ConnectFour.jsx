@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./ConnectFour.scss";
 const ROWS = 6;
 const COLUMNS = 7;
@@ -6,7 +6,12 @@ const COLUMNS = 7;
 const createBoard = () =>
   Array.from({ length: ROWS }, () => Array(COLUMNS).fill(null));
 
-export default function ConnectFour({playerOne, playerTwo}) {
+export default function ConnectFour({playerOne, playerTwo, players, isGameStarted, setIsGameStarted, setIsGameFinished}) {
+
+  let playerMapper = {
+    "🔴": playerOne,
+    "🟡": playerTwo,
+  }
   const [board, setBoard] = useState(createBoard);
   const [player, setPlayer] = useState("🔴");
   const [winner, setWinner] = useState(null);
@@ -46,6 +51,9 @@ export default function ConnectFour({playerOne, playerTwo}) {
   };
 
   const handleClick = (col) => {
+    if (!isGameStarted) {
+      setIsGameStarted(true)
+    }
     if (winner) return;
 
     for (let row = ROWS - 1; row >= 0; row--) {
@@ -71,9 +79,16 @@ export default function ConnectFour({playerOne, playerTwo}) {
     setWinner(null);
   };
 
+  useEffect(() => {
+    if(winner) {
+      setIsGameFinished(true)
+      // setIsGameStarted(false)
+    }
+  },[winner])
+
   return (
     <div className="connect-four-wrapper">
-      <h3 className="player-turn">{winner ? `${winner} wins!` : `${player}'s turn`}</h3>
+      <h3 className="player-turn">{winner ? `${winner} ${players.find(p => p.id === Number(playerMapper[player])).nombre} wins!` : `${player} ${players.find(p => p.id === Number(playerMapper[player])).nombre}'s turn`}</h3>
       <div className="board" style={{ display: "inline-grid", gridTemplateColumns: `repeat(${COLUMNS}, 50px)` }}>
         {board.map((row, i) =>
           row.map((cell, j) => (

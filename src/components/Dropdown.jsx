@@ -3,7 +3,6 @@ import "./Dropdown.scss";
 
 const Dropdown = ({ id, options, selectedValue, onChange, disabledValues, disabledDropdown }) => {
 
-
   return (
     <div className='container'>
       <label htmlFor="dropdown" className='label'>Choose an option:</label>
@@ -17,11 +16,11 @@ const Dropdown = ({ id, options, selectedValue, onChange, disabledValues, disabl
         <option value="">-- Select an option --</option>
         {options.map((opt) => (
           <option
-            key={opt.value}
-            value={opt.value}
-            disabled={disabledValues.includes(opt.value)}
+            key={opt.id}
+            value={opt.id}
+            disabled={disabledValues.includes(`${opt.id}`)}
           >
-            {opt.label}
+            {opt.nombre}
           </option>
         ))}
       </select>
