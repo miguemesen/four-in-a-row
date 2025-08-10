@@ -71,7 +71,16 @@ const Home = () => {
       setIsGameReady(false)
     }
     if (mode === 'load') {
-      setIsGameStarted(true)
+      setSelected({
+        dropdown1: '',
+        dropdown2: '',
+      })
+      setLoadGame(undefined)
+      setWinner(undefined);
+      setGame(undefined);
+      setIsGameStarted(false)
+      setIsGameFinished(false)
+      setIsGameReady(false)
       setShowLoad(true)
       // setIsGameFinished
       // poner a los jugadores cargados en el dropdown

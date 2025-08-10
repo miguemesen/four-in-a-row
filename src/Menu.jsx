@@ -9,7 +9,7 @@ const Menu = ({showLoad, setShowLoad, isGameStarted, isGameReady, setGame, setSe
     setSelected({dropdown1: `${game.jugador1.id}`, dropdown2: `${game.jugador2.id}`})
     if (game.estado === 'finalizado') {
       setIsGameFinished(true)
-      setWinner(game.resultado)
+      setWinner(game.turno === 1 ? "🔴" : "🟡") // era turno del que perdio, entonces gana el anterior
     } else {
       setIsGameStarted(true)
       setIsGameFinished(false)
@@ -17,6 +17,7 @@ const Menu = ({showLoad, setShowLoad, isGameStarted, isGameReady, setGame, setSe
       setGame({partida: game})
     }
     setIsGameReady(true)
+    setIsGameStarted(true)
   };
 
   return (

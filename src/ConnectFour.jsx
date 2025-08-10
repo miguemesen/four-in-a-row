@@ -121,9 +121,13 @@ export default function ConnectFour({player, setPlayer, winner, setWinner, loade
     }
   },[winner])
 
+  console.log('print: players: ', players);
+  console.log('print: player: ', player);
+  console.log('print: winner: ', winner);
+  console.log('print: playerMapper: ', playerMapper);
   return (
     <div className="connect-four-wrapper">
-      <h3 className="player-turn">{winner ? `${winner} ${players.find(p => p.id === Number(playerMapper[player])).nombre} wins!` : `${player} ${players.find(p => p.id === Number(playerMapper[player])).nombre}'s turn`}</h3>
+      <h3 className="player-turn">{winner ? `${winner} ${players.find(p => p.id === Number(playerMapper[winner])).nombre} wins!` : `${player} ${players.find(p => p.id === Number(playerMapper[player])).nombre}'s turn`}</h3>
       <div className="board" style={{ display: "inline-grid", gridTemplateColumns: `repeat(${COLUMNS}, 50px)` }}>
         {board.map((row, i) =>
           row.map((cell, j) => (
