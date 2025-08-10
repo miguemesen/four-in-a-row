@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from "react";
 import "./ConnectFour.scss";
+import { loserPlayer, postGame, updateGame, winnerPlayer } from "./api";
 const ROWS = 6;
 const COLUMNS = 7;
 
 const createBoard = () =>
   Array.from({ length: ROWS }, () => Array(COLUMNS).fill(null));
 
-export default function ConnectFour({playerOne, playerTwo, players, isGameStarted, setIsGameStarted, setIsGameFinished}) {
+export default function ConnectFour({player, setPlayer, winner, setWinner, loadedGame, game, setGame, playerOne, playerTwo, players, isGameStarted, setIsGameStarted, setIsGameFinished}) {
+
 
   let playerMapper = {
     "🔴": playerOne,
     "🟡": playerTwo,
   }
-  const [board, setBoard] = useState(createBoard);
-  const [player, setPlayer] = useState("🔴");
-  const [winner, setWinner] = useState(null);
+  const [board, setBoard] = useState(loadedGame ? JSON.parse(loadedGame.tablero) : null || createBoard);
+
 
   const checkWinner = (board, row, col, player) => {
     const directions = [
@@ -50,26 +51,58 @@ export default function ConnectFour({playerOne, playerTwo, players, isGameStarte
     return false;
   };
 
-  const handleClick = (col) => {
-    if (!isGameStarted) {
+  const handleClick = async (col) => {
+    let newGameId;
+    if (!isGameStarted && !winner) {
       setIsGameStarted(true)
+      const localGame = {
+        jugador1_Id: playerOne,
+        jugador2_Id: playerTwo,
+        estado: "iniciado",
+        fechaHora: new Date().toISOString(),
+        tablero: JSON.stringify(board),
+        resultado: "pendiente",
+        turno: 0
+      }
+      const res = await postGame(localGame)
+      setGame(res)
+      newGameId = res.partida.id;
     }
     if (winner) return;
 
+    let tempIsWinner = false;
+    let newBoard;
     for (let row = ROWS - 1; row >= 0; row--) {
       if (!board[row][col]) {
-        const newBoard = board.map((r) => [...r]);
+        newBoard = board.map((r) => [...r]);
         newBoard[row][col] = player;
         setBoard(newBoard);
 
         if (checkWinner(newBoard, row, col, player)) {
+          tempIsWinner = true
           setWinner(player);
+          winnerPlayer(playerMapper[player]) // llamadas a api
+          loserPlayer(playerMapper[player === "🔴" ? "🟡" : "🔴"])
+          updateGame(game.partida.id, {
+            estado: "finalizado",
+            tablero: JSON.stringify(newBoard),
+            resultado: playerOne,
+            turno: player === "🔴" ? 1 : 0
+          })
         } else {
           setPlayer(player === "🔴" ? "🟡" : "🔴");
         }
 
         break;
       }
+    }
+    if (!tempIsWinner) {
+      updateGame(newGameId || game.partida.id, {
+        estado: "iniciado",
+        tablero: JSON.stringify(newBoard),
+        resultado: "pendiente",
+        turno: player === "🔴" ? 1 : 0,
+      })
     }
   };
 
@@ -83,6 +116,8 @@ export default function ConnectFour({playerOne, playerTwo, players, isGameStarte
     if(winner) {
       setIsGameFinished(true)
       // setIsGameStarted(false)
+    } else {
+
     }
   },[winner])
 
@@ -114,7 +149,7 @@ export default function ConnectFour({playerOne, playerTwo, players, isGameStarte
         )}
       </div>
       <br />
-      <button onClick={resetGame} style={{ marginTop: 20 }}>
+      <button disabled={winner} onClick={resetGame} style={{ marginTop: 20 }}>
         Restart
       </button>
     </div>

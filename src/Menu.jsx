@@ -1,27 +1,22 @@
 import React, { useState } from 'react';
 import './Menu.scss';
 
-const mockSavedGames = [
-  {
-    id: 1,
-    date: '2025-07-01 14:30',
-    player1: 'Alice',
-    player2: 'Bob',
-    state: 'Finished',
-  },
-  {
-    id: 2,
-    date: '2025-07-02 16:00',
-    player1: 'Charlie',
-    player2: 'Diana',
-    state: 'In Progress',
-  },
-];
+const Menu = ({showLoad, setShowLoad, isGameStarted, isGameReady, setGame, setSelected, setWinner, setPlayer, setIsGameReady, mode, setMode, allGames, setLoadGame, setIsGameStarted, setIsGameFinished}) => {
 
-const Menu = ({mode, setMode}) => {
-
-  const handlePlayClick = (gameId) => {
-    console.log('play game', gameId);
+  const handlePlayClick = (game) => {
+    setMode('playingLoad')
+    setLoadGame(game)
+    setSelected({dropdown1: `${game.jugador1.id}`, dropdown2: `${game.jugador2.id}`})
+    if (game.estado === 'finalizado') {
+      setIsGameFinished(true)
+      setWinner(game.resultado)
+    } else {
+      setIsGameStarted(true)
+      setIsGameFinished(false)
+      setPlayer(game.turno === 0 ? "🔴" : "🟡")
+      setGame({partida: game})
+    }
+    setIsGameReady(true)
   };
 
   return (
@@ -36,7 +31,7 @@ const Menu = ({mode, setMode}) => {
         </button>
       </div>
 
-      {mode === 'load' && (
+      {showLoad && mode === 'load' && (
         <div className="menu__section">
           <table className="menu__table">
             <thead>
@@ -49,16 +44,16 @@ const Menu = ({mode, setMode}) => {
               </tr>
             </thead>
             <tbody>
-              {mockSavedGames.map((game) => (
+              {allGames.map((game) => (
                 <tr key={game.id}>
-                  <td>{game.date}</td>
-                  <td>{game.player1}</td>
-                  <td>{game.player2}</td>
-                  <td>{game.state}</td>
+                  <td>{game.fechaHora}</td>
+                  <td>{game.jugador1.nombre}</td>
+                  <td>{game.jugador2.nombre}</td>
+                  <td>{game.estado}</td>
                   <td>
                     <button
                       className="menu__play-button"
-                      onClick={() => handlePlayClick(game.id)}
+                      onClick={() => handlePlayClick(game)}
                     >
                       Play
                     </button>

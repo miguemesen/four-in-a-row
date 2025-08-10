@@ -11,7 +11,7 @@ const Players = () => {
   const fetchPlayers = async () => {
     try {
       const data = await getAllPlayers();
-      setPlayers(data);
+      setPlayers(data.sort((a,b) => (b.marcador + b.perdidas) - (a.marcador + a.perdidas)));
     } catch (error) {
       console.error("Error fetching players:", error);
     }
@@ -34,7 +34,7 @@ const Players = () => {
   const handleCreatePlayer = async () => {
     const { id, name } = newPlayer;
     if (!id || !name) return alert('Both ID and Name are required.');
-    if (players.some((p) => p.id === id)) return alert('ID already exists.');
+    if (players.some((p) => p.id === Number(id))) return alert('ID already exists.');
     if (players.some((p) => p.nombre === name)) return alert('Name already exists.');
 
     await createPlayer({id, nombre:name})
@@ -72,7 +72,7 @@ const Players = () => {
               <tr key={player.id}>
                 <td>{player.id}</td>
                 <td>{player.nombre}</td>
-                <td>{player.ganadas + player.perdidas}</td>
+                <td>{player.ganadas - player.perdidas}</td>
                 <td>{player.ganadas}</td>
                 <td>{player.perdidas}</td>
                 <td>{player.empates}</td>
