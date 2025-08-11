@@ -45,22 +45,25 @@ const Menu = ({showLoad, setShowLoad, isGameStarted, isGameReady, setGame, setSe
               </tr>
             </thead>
             <tbody>
-              {allGames.map((game) => (
-                <tr key={game.id}>
-                  <td>{game.fechaHora}</td>
-                  <td>{game.jugador1.nombre}</td>
-                  <td>{game.jugador2.nombre}</td>
-                  <td>{game.estado}</td>
-                  <td>
-                    <button
-                      className="menu__play-button"
-                      onClick={() => handlePlayClick(game)}
-                    >
-                      Play
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {allGames
+                .slice()
+                .sort((a, b) => new Date(b.fechaHora) - new Date(a.fechaHora))
+                .map((game) => (
+                  <tr key={game.id}>
+                    <td>{game.fechaHora}</td>
+                    <td>{game.jugador1.nombre}</td>
+                    <td>{game.jugador2.nombre}</td>
+                    <td>{game.estado}</td>
+                    <td>
+                      <button
+                        className="menu__play-button"
+                        onClick={() => handlePlayClick(game)}
+                      >
+                        Play
+                      </button>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
