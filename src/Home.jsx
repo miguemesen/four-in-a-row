@@ -24,10 +24,8 @@ const Home = () => {
     dropdown2: '',
   });
   const [showLoad, setShowLoad] = useState(false);
+  const [isDraw, setIsDraw] = useState(false);
 
-  console.log('print: isGameReady: ', isGameReady);
-  console.log('print: showLoad: ', showLoad);
-  console.log('print: mode: ', mode);
   const fetchAllGames = async () => {
     try {
       const data = await getAllGames();
@@ -57,7 +55,7 @@ const Home = () => {
 
 
   useEffect(() => {
-    if (mode === 'new') {
+    if (mode === 'new' || mode === 'newGame') {
       setShowLoad(false)
       setSelected({
         dropdown1: '',
@@ -65,6 +63,7 @@ const Home = () => {
       })
       setLoadGame(undefined)
       setWinner(undefined);
+      setIsDraw(false)
       setGame(undefined);
       setIsGameStarted(false)
       setIsGameFinished(false)
@@ -82,8 +81,6 @@ const Home = () => {
       setIsGameFinished(false)
       setIsGameReady(false)
       setShowLoad(true)
-      // setIsGameFinished
-      // poner a los jugadores cargados en el dropdown
     }
     if (mode === 'playingLoad') {
       setIsGameStarted(true)
@@ -110,9 +107,6 @@ const Home = () => {
     } else if (!isGameStarted) {
       setIsDropdownDisabled(false)
     }
-    // if(!isGameStarted && isGameFinished) {
-    //   setIsDropdownDisabled(false)
-    // }
   }, [isGameStarted, isGameFinished])
 
 
@@ -124,7 +118,7 @@ const Home = () => {
         <div className='home-header-title'>Connect 4</div>
       </div>
       <div className='initial-menu'>
-        <Menu showLoad={showLoad} setShowLoad={setShowLoad} isGameStarted={isGameStarted} isGameReady={isGameReady} setGame={setGame} setSelected={setSelected} setWinner={setWinner} setPlayer={setPlayer} setIsGameReady={setIsGameReady} setIsGameStarted={setIsGameStarted} setIsGameFinished={setIsGameFinished} mode={mode} setMode={setMode} allGames={allGames} setLoadGame={setLoadGame}/>
+        <Menu setIsDraw={setIsDraw} showLoad={showLoad} setShowLoad={setShowLoad} isGameStarted={isGameStarted} isGameReady={isGameReady} setGame={setGame} setSelected={setSelected} setWinner={setWinner} setPlayer={setPlayer} setIsGameReady={setIsGameReady} setIsGameStarted={setIsGameStarted} setIsGameFinished={setIsGameFinished} mode={mode} setMode={setMode} allGames={allGames} setLoadGame={setLoadGame}/>
       </div>
       {(mode === 'new' || isGameReady) && (<div className='select-players'>
         <Dropdown
@@ -144,7 +138,7 @@ const Home = () => {
           disabledDropdown={isDropdownDisabled}
         />
       </div>)}
-      {isGameReady && !showLoad &&(<ConnectFour winner={winner} setWinner={setWinner} player={player} setPlayer={setPlayer} loadedGame={loadGame} game={game} setGame={setGame} playerOne={selected.dropdown1} playerTwo={selected.dropdown2} players={players} isGameStarted={isGameStarted} setIsGameStarted={setIsGameStarted} setIsGameFinished={setIsGameFinished} setIsDropdownDisabled={setIsDropdownDisabled}/>)}
+      {isGameReady && !showLoad &&(<ConnectFour isDraw={isDraw} setIsDraw={setIsDraw} winner={winner} setWinner={setWinner} player={player} setPlayer={setPlayer} loadedGame={loadGame} game={game} setGame={setGame} playerOne={selected.dropdown1} playerTwo={selected.dropdown2} players={players} isGameStarted={isGameStarted} setIsGameStarted={setIsGameStarted} setIsGameFinished={setIsGameFinished} setIsDropdownDisabled={setIsDropdownDisabled}/>)}
     </div>
   )
 }

@@ -43,7 +43,7 @@ export const winnerPlayer = async (id) => {
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
-    return await response.json();
+    return
   } catch (error) {
     console.error('Error adding point to winner:', error);
     throw error;
@@ -61,7 +61,7 @@ export const loserPlayer = async (id) => {
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
-    return await response.json();
+    return;
   } catch (error) {
     console.error('Error subtracting point to winner:', error);
     throw error;
@@ -79,7 +79,7 @@ export const drawPlayer = async (id) => {
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
-    return await response.json();
+    return
   } catch (error) {
     console.error('Error adding draw to players:', error);
     throw error;
