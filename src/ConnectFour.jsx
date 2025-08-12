@@ -52,59 +52,77 @@ export default function ConnectFour({player, setPlayer, winner, setWinner, loade
   };
 
   const handleClick = async (col) => {
-    let newGameId;
-    if (!isGameStarted && !winner) {
-      setIsGameStarted(true)
-      const localGame = {
-        jugador1_Id: playerOne,
-        jugador2_Id: playerTwo,
-        estado: "iniciado",
-        fechaHora: new Date().toISOString(),
-        tablero: JSON.stringify(board),
-        resultado: "pendiente",
-        turno: 0
-      }
-      const res = await postGame(localGame)
-      setGame(res)
-      newGameId = res.partida.id;
+  let newGameId;
+  // Obtén el id de la partida correctamente, sea cual sea la estructura
+  const gameId = game?.partida?.id || game?.id;
+
+  if (!isGameStarted && !winner) {
+    setIsGameStarted(true)
+    const localGame = {
+      jugador1_Id: playerOne,
+      jugador2_Id: playerTwo,
+      estado: "iniciado",
+      fechaHora: new Date().toISOString(),
+      tablero: JSON.stringify(board),
+      resultado: "pendiente",
+      turno: 0
     }
-    if (winner) return;
+    const res = await postGame(localGame)
+    setGame(res)
+    newGameId = res.partida.id;
+  }
+  if (winner) return;
 
-    let tempIsWinner = false;
-    let newBoard;
-    for (let row = ROWS - 1; row >= 0; row--) {
-      if (!board[row][col]) {
-        newBoard = board.map((r) => [...r]);
-        newBoard[row][col] = player;
-        setBoard(newBoard);
+  let tempIsWinner = false;
+  let newBoard;
+  for (let row = ROWS - 1; row >= 0; row--) {
+    if (!board[row][col]) {
+      newBoard = board.map((r) => [...r]);
+      newBoard[row][col] = player;
+      setBoard(newBoard);
 
-        if (checkWinner(newBoard, row, col, player)) {
-          tempIsWinner = true
-          setWinner(player);
-          winnerPlayer(playerMapper[player]) // llamadas a api
-          loserPlayer(playerMapper[player === "🔴" ? "🟡" : "🔴"])
-          updateGame(game.partida.id, {
+      if (checkWinner(newBoard, row, col, player)) {
+        tempIsWinner = true
+        setWinner(player);
+        winnerPlayer(playerMapper[player]) // llamadas a api
+        loserPlayer(playerMapper[player === "🔴" ? "🟡" : "🔴"])
+        updateGame(gameId, {
+          estado: "finalizado",
+          tablero: JSON.stringify(newBoard),
+          resultado: playerOne,
+          turno: player === "🔴" ? 1 : 0
+        })
+      } else {
+        // --- Lógica de empate ---
+        const flatBoard = newBoard.flat();
+        const fichasJugador1 = flatBoard.filter(f => f === "🔴").length;
+        const fichasJugador2 = flatBoard.filter(f => f === "🟡").length;
+        if (fichasJugador1 === 21 && fichasJugador2 === 21) {
+          setWinner("Empate 🤝");
+          setIsGameFinished(true);
+          updateGame(gameId, {
             estado: "finalizado",
             tablero: JSON.stringify(newBoard),
-            resultado: playerOne,
+            resultado: "empate",
             turno: player === "🔴" ? 1 : 0
-          })
+          });
         } else {
           setPlayer(player === "🔴" ? "🟡" : "🔴");
         }
-
-        break;
       }
+
+      break;
     }
-    if (!tempIsWinner) {
-      updateGame(newGameId || game.partida.id, {
-        estado: "iniciado",
-        tablero: JSON.stringify(newBoard),
-        resultado: "pendiente",
-        turno: player === "🔴" ? 1 : 0,
-      })
-    }
-  };
+  }
+  if (!tempIsWinner) {
+    updateGame(newGameId || gameId, {
+      estado: "iniciado",
+      tablero: JSON.stringify(newBoard),
+      resultado: "pendiente",
+      turno: player === "🔴" ? 1 : 0,
+    })
+  }
+};
 
   const resetGame = () => {
     setBoard(createBoard);
@@ -127,7 +145,13 @@ export default function ConnectFour({player, setPlayer, winner, setWinner, loade
   console.log('print: playerMapper: ', playerMapper);
   return (
     <div className="connect-four-wrapper">
-      <h3 className="player-turn">{winner ? `${winner} ${players.find(p => p.id === Number(playerMapper[winner])).nombre} wins!` : `${player} ${players.find(p => p.id === Number(playerMapper[player])).nombre}'s turn`}</h3>
+      <h3 className="player-turn">
+        {winner
+          ? winner === "Empate 🤝"
+            ? "Empate 🤝"
+            : `${winner} ${(players.find(p => p.id === Number(playerMapper[winner]))?.nombre || '')} wins!`
+          : `${player} ${(players.find(p => p.id === Number(playerMapper[player]))?.nombre || '')}'s turn`}
+      </h3>
       <div className="board" style={{ display: "inline-grid", gridTemplateColumns: `repeat(${COLUMNS}, 50px)` }}>
         {board.map((row, i) =>
           row.map((cell, j) => (

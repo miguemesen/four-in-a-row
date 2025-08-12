@@ -4,21 +4,33 @@ import './Menu.scss';
 const Menu = ({showLoad, setShowLoad, isGameStarted, isGameReady, setGame, setSelected, setWinner, setPlayer, setIsGameReady, mode, setMode, allGames, setLoadGame, setIsGameStarted, setIsGameFinished}) => {
 
   const handlePlayClick = (game) => {
-    setMode('playingLoad')
-    setLoadGame(game)
-    setSelected({dropdown1: `${game.jugador1.id}`, dropdown2: `${game.jugador2.id}`})
-    if (game.estado === 'finalizado') {
+  setMode('playingLoad')
+  setLoadGame(game)
+  setSelected({dropdown1: `${game.jugador1.id}`, dropdown2: `${game.jugador2.id}`})
+
+  // Asegúrate de que el tablero es un array
+  const tablero = typeof game.tablero === "string" ? JSON.parse(game.tablero) : game.tablero;
+  const fichasJugador1 = tablero.flat().filter(f => f === 1 || f === "🔴").length;
+  const fichasJugador2 = tablero.flat().filter(f => f === 2 || f === "🟡").length;
+
+  if (game.estado === 'finalizado') {
+    // Detectar empate: ambos jugadores han puesto 21 fichas y no hay ganador
+    if (fichasJugador1 === 21 && fichasJugador2 === 21 && !game.ganador) {
       setIsGameFinished(true)
-      setWinner(game.turno === 1 ? "🔴" : "🟡") // era turno del que perdio, entonces gana el anterior
+      setWinner("Empate 🤝")
     } else {
-      setIsGameStarted(true)
-      setIsGameFinished(false)
-      setPlayer(game.turno === 0 ? "🔴" : "🟡")
-      setGame({partida: game})
+      setIsGameFinished(true)
+      setWinner(game.turno === 1 ? "🔴" : "🟡")
     }
-    setIsGameReady(true)
+  } else {
     setIsGameStarted(true)
-  };
+    setIsGameFinished(false)
+    setPlayer(game.turno === 0 ? "🔴" : "🟡")
+    setGame({partida: game})
+  }
+  setIsGameReady(true)
+  setIsGameStarted(true)
+};
 
   return (
     <div className="menu">
